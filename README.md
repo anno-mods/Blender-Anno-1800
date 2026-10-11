@@ -5,7 +5,7 @@ When used with the rdm4 converter and texconv, it will automatically convert .rd
 This means that if you have all those tools, you don't have to convert anything manually and can edit everything directly in Blender.
 
 # Requirements
-- Blender **3(.2)** https://www.blender.org/
+- at least Blender **5.1** https://www.blender.org/
 
 For full functionality you need:
 - rdm4 converter https://github.com/lukts30/rdm4
@@ -16,7 +16,7 @@ And of course the .rda explorer to unpack the game files: https://github.com/lys
 
 # Installation
 1. Install the other tools.
-2. Open blender, go to Edit->Preferences->Addons. Click `Install...` and select the downloaded `io_annocfg.zip` (https://github.com/xormenter/Blender-Anno-.cfg-Import-Addon/releases/tag/v.2.1).
+2. Open blender, go to Edit->Preferences->Addons. Click `Install...` and select the downloaded `io_annocfg.zip` (https://github.com/anno-mods/Blender-Anno-.cfg-Import-Addon/releases/latest).
 3. If you haven't done so already, **unpack the .rda files** (at least the data/graphics part of it) into a single folder. It should look something like this: `C:\whatever\somewhere\rda\data\graphics\...`.  
 4. In the addon preferences, set the **rda path** to the folder that **contains** your `data` folder with the unpacked rda files. In this example, that would be `C:\whatever\somewhere\rda`
 5. Specify the paths to the `texconv.exe`, `rdm4-bin.exe`, `AnnoFCConverter.exe` executables.
@@ -87,7 +87,7 @@ To set up  the prop asset library, create a fresh .blend file. Click the `File->
 You might also want to have other objects in your asset browser. 
 If you want f.e. to use all the models you made somewhere in all your project files, just save all your .blend files in the same user-library directory and mark the models you want as assets. I'd suggest to add a duplicate of them that has no parent object as asset (to avoid confusion). So you can just extract all kinds of nice parts from the vanilla models, save them in your asset library and then use them whereever you want. 
 
-If you have **Blender 3.2+**, the asset browser supports collections. This allows the addon to automatically import .cfg files into your asset library. Use the "Import All Cfgs" operator found next to the corresponding operator for props to import them and also safe this file in your user-library directory.
+The asset browser supports collections. This allows the addon to automatically import .cfg files into your asset library. Use the "Import All Cfgs" operator found next to the corresponding operator for props to import them and also safe this file in your user-library directory.
 Note that when you drag a .cfg asset into your scene, it will be an *instanced collection*, i.e. looking great but totally useless for modding purposes.
 There are two options to make them useful:
 - You convert it into a FILE object using `Instanced Collection To FILE_` in the anno object tab. It will be an empty that behaves like a file object, so you can parent it to a main file. You can however not edit it, nor can you load its animations.
