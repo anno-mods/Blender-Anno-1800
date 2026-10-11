@@ -1,9 +1,9 @@
 from .shader_node_templates import ShaderTemplate
 
-from .default_shader import AnnoDefaultShader
+from .default_shader import AnnoBasicShader
 from .shader_components import AdditionalPBRShaderComponent, CommonShaderComponent, DefaultShaderFakeComponent, DyeMaskTexScrollShaderComponent, EnumLink, EnvironmentShaderComponent, GlowShaderComponent, IntegerLink, StringLink, TerrainAdaptionShaderComponent
 
-class DecalShader(AnnoDefaultShader):
+class DecalShader(AnnoBasicShader):
     def __init__(self):
         super().__init__()
         self.shader_id = "AnnoDecalShader"
