@@ -15,15 +15,14 @@ class DestructShader(AnnoBasicShader):
 
         self.shader_id = "AnnoDestructShader"
         
-        self.add_link(IntegerLink("NumBonesPerVertex", "NumBonesPerVertex", 0))
         self.add_link(FlagLink("Enable Texture Atlas", "TEXTURE_ATLAS_ENABLED"))
+        self.compose(VertexFormatShaderComponent())
         self.compose(DefaultShaderFakeComponent())
         self.compose(CommonShaderComponent())
         self.compose(TerrainAdaptionShaderComponent())
         self.compose(GlowShaderComponent())
 
         # override default vertexformat
-        self.material_properties["VertexFormat"] = "P4h_N4b_G4b_B4b_T2h"
         self.material_properties["ShaderID"] = "6"
 
     def create_anno_shader(self):

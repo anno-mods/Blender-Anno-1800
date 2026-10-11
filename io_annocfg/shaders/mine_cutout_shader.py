@@ -8,9 +8,8 @@ class MineCutoutShader(AnnoBasicShader):
     def __init__(self):
         super().__init__()
         self.shader_id = "AnnoMineCutoutShader"
-        self.material_properties["VertexFormat"] = "P4h"
         self.material_properties["ShaderID"] = "4"        
-        self.add_link(IntegerLink("NumBonesPerVertex", "NumBonesPerVertex", 0))
+        self.compose(ShortDefaultVertexFormatShaderComponent())
         self.compose(CutoutComponent())
         self.add_link(FlagLink("Disable Revive Distance", "DisableReviveDistance"))
 

@@ -14,17 +14,15 @@ class ClothShader(AnnoBasicShader):
         super().__init__()
 
         self.shader_id = "AnnoClothShader"
-
+        self.material_properties["NumBonesPerVertex"] = "0"
+        self.add_link(EnumLink("VertexFormat", "VertexFormat", { "Cloth (P3f_N3f_G3f_B3f_T2f_C4b)": "P3f_N3b,T2f" }))
         self.compose(ClothShaderComponent())
         self.compose(AtlasComponent())
         self.compose(RimEffectComponent())
         self.compose(RipplesComponent())
         self.compose(MiniTerrainAdapion())
         self.add_link(FlagLink("Disable Revive Distance", "DisableReviveDistance"))
-
-        # override default vertexformat
-        self.material_properties["VertexFormat"] = "P3f_N3b,T2f"
-        self.material_properties["ShaderID"] = "0"
+        self.material_properties["ShaderID"] = "0"    
 
     def create_anno_shader(self):
         anno_shader = self.setup_empty_shader()

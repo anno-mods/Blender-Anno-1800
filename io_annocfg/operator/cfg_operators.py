@@ -5,7 +5,7 @@ from bpy.types import Operator, AddonPreferences
 from bpy.types import Object as BlenderObject
 from bpy_extras.object_utils import AddObjectHelper
 
-from ..anno_objects import MainFile, Model, Propcontainer, Prop, Cloth, Decal, SubFile, ClothMaterial
+from ..anno_objects import AnnoObject, MainFile, Model, Propcontainer, Prop, Cloth, Decal, SubFile, ClothMaterial
 from ..material import Material
 from ..shaders.default_shader import AnnoDefaultShader
 from ..shaders.prop_decal_shader import DecalPropShader
@@ -21,6 +21,7 @@ from ..shaders.mockup_shader import MockupShader
 from ..shaders.destruct_shader import DestructShader
 from ..shaders.water_shader import LiquidShader
 from ..shaders.glass_shader import GlassShader
+from ..shaders.mine_cutout_shader import MineCutoutShader
 
 class generic_cfg_object(Operator, AddObjectHelper):
     bl_idname = "mesh.add_anno_cfgobj"

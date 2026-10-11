@@ -437,6 +437,7 @@ class DefaultPropComponent(AbstractShaderComponent):
             FlagLink("Specular uses 2nd UV set", "SPEC_OCCLUSION_USE_2ND_UV")
         ]
 
+
 class VertexFormatShaderComponent(AbstractShaderComponent):
     def __init__(self):
         self.links = [
@@ -445,11 +446,18 @@ class VertexFormatShaderComponent(AbstractShaderComponent):
                      { "Standard (P4h_N4b_G4b_B4b_T2h)": "P4h_N4b_G4b_B4b_T2h", 
                       "Joints (P4h_N4b_G4b_B4b_T2h_I4b)": "P4h_N4b_G4b_B4b_T2h_I4b", 
                       "Weighted Joints (P4h_N4b_G4b_B4b_T2h_I4b_W4b)": "P4h_N4b_G4b_B4b_T2h_I4b_W4b", 
-                      "4 Weighted Joins (P4h_N4b_G4b_B4b_T2h_I4b_I4b_I4b_I4b_W4b_W4b_W4b_W4b)": "P4h_N4b_G4b_B4b_T2h_I4b_I4b_I4b_I4b_W4b_W4b_W4b_W4b",
-                      "Cloth (P3f_N3f_G3f_B3f_T2f_C4b)": "P3f_N3b,T2f", 
-                      "Plant (P4h_N4b_G4b_B4b_T2h_C4b_C4b)": "P4h_N4b_G4b_B4b_T2h_C4b_C4b",
-                        "Decal Detail (P4h_T2h_C4b)": "P4h_T2h_C4b", 
-                        "Decal (P3f_N3f_G3f_T2f_T1f_T1f_T1f)": "P3f_N3f_G3f_T2f_T1f_T1f_T1f"})
+                      "4 Weighted Joins (P4h_N4b_G4b_B4b_T2h_I4b_I4b_I4b_I4b_W4b_W4b_W4b_W4b)": "P4h_N4b_G4b_B4b_T2h_I4b_I4b_I4b_I4b_W4b_W4b_W4b_W4b" })
+        ]
+
+class ShortDefaultVertexFormatShaderComponent(AbstractShaderComponent):
+    def __init__(self):
+        self.links = [
+            IntegerLink("NumBonesPerVertex", "NumBonesPerVertex", 0),
+            EnumLink("VertexFormat", "VertexFormat", 
+                     { "Standard (P4h_N4b_G4b_B4b_T2h)": "P4h", 
+                      "Joints (P4h_N4b_G4b_B4b_T2h_I4b)": "P4h_N4b_G4b_B4b_T2h_I4b", 
+                      "Weighted Joints (P4h_N4b_G4b_B4b_T2h_I4b_W4b)": "P4h_N4b_G4b_B4b_T2h_I4b_W4b", 
+                      "4 Weighted Joins (P4h_N4b_G4b_B4b_T2h_I4b_I4b_I4b_I4b_W4b_W4b_W4b_W4b)": "P4h_N4b_G4b_B4b_T2h_I4b_I4b_I4b_I4b_W4b_W4b_W4b_W4b" })
         ]
 
 class DefaultShaderFakeComponent(AbstractShaderComponent):

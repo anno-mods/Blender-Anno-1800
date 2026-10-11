@@ -7,8 +7,9 @@ class CutoutShader(AnnoBasicShader):
 
     def __init__(self):
         super().__init__()
-        self.shader_id = "AnnoCutoutShader"
-        self.material_properties["VertexFormat"] = "P4h"
+        self.shader_id = "AnnoCutoutShader"        
+        self.material_properties["NumBonesPerVertex"] = "0"
+        self.add_link(EnumLink("VertexFormat", "VertexFormat", { "Standard (P4h_N4b_G4b_B4b_T2h)": "P4h" }))
         self.material_properties["ShaderID"] = "5"
 
         self.compose(CutoutComponent())
