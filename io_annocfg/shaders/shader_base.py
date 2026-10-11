@@ -77,6 +77,8 @@ class AnnoBasicShader:
         group.name = self.shader_id
         if not self.shader_id in bpy.data.node_groups:
             self.create_anno_shader()            
+            for link in self.links:
+                link.finalize_shader(bpy.data.node_groups[self.shader_id])
         group.node_tree = bpy.data.node_groups[self.shader_id]
         print(self.shader_id)
         print(group.name)
@@ -90,6 +92,7 @@ class AnnoBasicShader:
                 continue
 
             socket = anno_shader.interface.new_socket(socket_type = l.socket_type, name = l.link_key, in_out = 'INPUT')
+            l.setup_socket(anno_shader, socket)
             if l.has_default_value():
                 socket.default_value = l.default_value    
         anno_shader.interface.new_socket(socket_type = "NodeSocketShader", name = "Shader", in_out='OUTPUT')

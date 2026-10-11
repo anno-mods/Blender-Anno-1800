@@ -1,3 +1,6 @@
+from enum import Enum
+from tokenize import String
+
 import bpy
 from .shader_base import AnnoBasicShader
 from .shader_components import *
@@ -13,8 +16,8 @@ class AnnoDefaultShader(AnnoBasicShader):
     def __init__(self):
         super().__init__()
 
-        self.shader_id = "AnnoDefaultShader"        
-        self.add_link(IntegerLink("NumBonesPerVertex", "NumBonesPerVertex", 0))
+        self.shader_id = "AnnoDefaultShader"       
+        self.compose(VertexFormatShaderComponent())
         self.compose(DefaultShaderFakeComponent())
         self.compose(CommonShaderComponent())
         self.compose(DyeMaskTexScrollShaderComponent())
@@ -24,7 +27,6 @@ class AnnoDefaultShader(AnnoBasicShader):
         self.compose(GlowShaderComponent())
 
         # override default vertexformat
-        self.material_properties["VertexFormat"] = "P4h_N4b_G4b_B4b_T2h"
         self.material_properties["ShaderID"] = "8"
 
     def create_anno_shader(self):

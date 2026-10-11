@@ -28,6 +28,7 @@ class DecalDetailPropShader(AnnoBasicShader):
                 continue
 
             socket = anno_shader.interface.new_socket(socket_type = l.socket_type, name = l.link_key, in_out = 'INPUT')
+            l.setup_socket(anno_shader, socket)
             if l.has_default_value():
                 socket.default_value = l.default_value    
         

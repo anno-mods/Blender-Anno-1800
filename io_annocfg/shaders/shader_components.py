@@ -33,6 +33,13 @@ class AbstractLink:
     def to_blender(self, shader, material_node : ET.Element, blender_material):
         return 
 
+    # called by the shader after the interface socket was created in the node group
+    def setup_socket(self, node_group, interface_socket):
+        return
+
+    def finalize_shader(self, node_group):
+        return
+
     def get_input(self, blender_material):
         group = [n for n in blender_material.node_tree.nodes if n.bl_idname == "ShaderNodeGroup"]
         return group[0].inputs.get(self.link_key)
@@ -284,6 +291,91 @@ class StringLink(AbstractLink):
         except: 
             input.default_value = self.default_value if self.has_default_value() else ""
 
+class EnumLink(AbstractLink): 
+    # NodeSocketMenu gets its items from the Menu Switch node it is connected to inside the group.
+    MENU_SWITCH_IDNAMES = ("ShaderNodeMenuSwitch", "GeometryNodeMenuSwitch")
+
+    def __init__(self, link_key, flag_key, options, is_invalid = False, default_value = None):
+        # options: list of values, or dict {displayed value: exported value}
+        if isinstance(options, dict):
+            self.mapping = dict(options)
+        else:
+            self.mapping = {option: option for option in options}
+        self.options = list(self.mapping.keys())
+        if default_value is None and len(self.options) > 0:
+            default_value = self.options[0]
+        super().__init__(default_value, is_invalid)
+        self.socket_type = "NodeSocketMenu"
+        self.flag_key = flag_key
+        self.link_key = link_key
+
+    def setup_socket(self, node_group, interface_socket):
+        menu_switch = None
+        for idname in self.MENU_SWITCH_IDNAMES:
+            try:
+                menu_switch = node_group.nodes.new(type = idname)
+                break
+            except RuntimeError:
+                continue
+        if menu_switch is None:
+            log.warning("Menu Switch node is not available in this Blender version, cannot create items for '%s'.", self.link_key)
+            return
+
+        menu_switch.label = self.link_key
+        menu_switch.enum_items.clear()
+        for option in self.options:
+            menu_switch.enum_items.new(option)
+
+        group_input = node_group.nodes.new(type = "NodeGroupInput")
+        node_group.links.new(group_input.outputs[self.link_key], menu_switch.inputs["Menu"])
+
+    # Blender greys out menu sockets that do not influence the group output.
+    # Route the menu switch through a neutral Mix Shader (both inputs identical) in front of the output.
+    def finalize_shader(self, node_group):
+        menu_switch = next((n for n in node_group.nodes 
+            if n.bl_idname in self.MENU_SWITCH_IDNAMES and n.label == self.link_key), None)
+        group_output = next((n for n in node_group.nodes if n.bl_idname == "NodeGroupOutput"), None)
+        if menu_switch is None or group_output is None:
+            return
+        shader_input = group_output.inputs.get("Shader")
+        if shader_input is None or not shader_input.is_linked:
+            return
+
+        source = shader_input.links[0].from_socket
+        mix = node_group.nodes.new(type = "ShaderNodeMixShader")
+        mix.label = self.link_key + " (keeps menu active)"
+        mix.location = (group_output.location.x - 200, group_output.location.y)
+        node_group.links.new(source, mix.inputs[1])
+        node_group.links.new(source, mix.inputs[2])
+        node_group.links.new(menu_switch.outputs[0], mix.inputs[0])
+        node_group.links.new(mix.outputs[0], shader_input)
+
+    def to_xml(self, parent : ET.Element, blender_material):
+        input = self.get_input(blender_material)
+        value = self.default_value if self.has_default_value() else ""
+        if input is not None and input.default_value:
+            value = input.default_value
+
+        flag = ET.SubElement(parent, self.flag_key)
+        flag.text = str(self.mapping.get(value, value))
+
+    def to_blender(self, shader, material_node : ET.Element, blender_material):
+        input = self.get_input(blender_material)
+        if input is None: 
+            return 
+        value = self.default_value if self.has_default_value() else None
+        subnode = material_node.find(self.flag_key)
+        if subnode is not None and subnode.text is not None:
+            displayed = next((d for d, e in self.mapping.items() if str(e) == subnode.text), None)
+            if displayed is not None:
+                value = displayed
+        if value is None:
+            return
+        try:
+            input.default_value = value
+        except TypeError:
+            log.warning("Could not set menu value '%s' for '%s'.", value, self.link_key)
+
 class ColorLink(AbstractLink): 
     def __init__(self, link_key, flag_key, is_invalid = False, default_value = None):
         super().__init__(default_value, is_invalid)
@@ -343,6 +435,21 @@ class DefaultPropComponent(AbstractShaderComponent):
             TextureLink("cSeperateAO", "SEPARATE_AO_TEXTURE", "cSeparateAOTex"),
             TextureLink("Specular Occlusion", "SPEC_OCCLUSION_TEX_ENABLED", "cModelSpecOcclusionTex"),
             FlagLink("Specular uses 2nd UV set", "SPEC_OCCLUSION_USE_2ND_UV")
+        ]
+
+class VertexFormatShaderComponent(AbstractShaderComponent):
+    def __init__(self):
+        self.links = [
+            IntegerLink("NumBonesPerVertex", "NumBonesPerVertex", 0),
+            EnumLink("VertexFormat", "VertexFormat", 
+                     { "Standard (P4h_N4b_G4b_B4b_T2h)": "P4h_N4b_G4b_B4b_T2h", 
+                      "Joints (P4h_N4b_G4b_B4b_T2h_I4b)": "P4h_N4b_G4b_B4b_T2h_I4b", 
+                      "Weighted Joints (P4h_N4b_G4b_B4b_T2h_I4b_W4b)": "P4h_N4b_G4b_B4b_T2h_I4b_W4b", 
+                      "4 Weighted Joins (P4h_N4b_G4b_B4b_T2h_I4b_I4b_I4b_I4b_W4b_W4b_W4b_W4b)": "P4h_N4b_G4b_B4b_T2h_I4b_I4b_I4b_I4b_W4b_W4b_W4b_W4b",
+                      "Cloth (P3f_N3f_G3f_B3f_T2f_C4b)": "P3f_N3b,T2f", 
+                      "Plant (P4h_N4b_G4b_B4b_T2h_C4b_C4b)": "P4h_N4b_G4b_B4b_T2h_C4b_C4b",
+                        "Decal Detail (P4h_T2h_C4b)": "P4h_T2h_C4b", 
+                        "Decal (P3f_N3f_G3f_T2f_T1f_T1f_T1f)": "P3f_N3f_G3f_T2f_T1f_T1f_T1f"})
         ]
 
 class DefaultShaderFakeComponent(AbstractShaderComponent):
