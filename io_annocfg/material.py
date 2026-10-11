@@ -275,23 +275,25 @@ class Material:
         anno_shader = self.add_anno_shader(nodes)
         material.node_tree.nodes.remove(nodes["Principled BSDF"])
         
-        emissive_color = self.add_shader_node(node_tree, "ShaderNodeCombineRGB",
+        emissive_color = self.add_shader_node(node_tree, "ShaderNodeCombineColor",
                             name = "cEmissiveColor",
+                            mode = "RGB",
                             position = (3, 6.5),
                             default_inputs = {
-                                "R": self.colors["cEmissiveColor"][0],
-                                "G": self.colors["cEmissiveColor"][1],
-                                "B": self.colors["cEmissiveColor"][2],
+                                "Red": self.colors["cEmissiveColor"][0],
+                                "Green": self.colors["cEmissiveColor"][1],
+                                "Blue": self.colors["cEmissiveColor"][2],
                             },
                             inputs = {}
         )
-        c_diffuse_mult = self.add_shader_node(node_tree, "ShaderNodeCombineRGB",
+        c_diffuse_mult = self.add_shader_node(node_tree, "ShaderNodeCombineColor",
                             name = "cDiffuseColor",
+                            mode = "RGB",
                             position = (2, 6.5),
                             default_inputs = {
-                                "R": self.colors["cDiffuseColor"][0],
-                                "G": self.colors["cDiffuseColor"][1],
-                                "B": self.colors["cDiffuseColor"][2],
+                                "Red": self.colors["cDiffuseColor"][0],
+                                "Green": self.colors["cDiffuseColor"][1],
+                                "Blue": self.colors["cDiffuseColor"][2],
                             },
                             inputs = {}
         )
@@ -314,7 +316,7 @@ class Material:
         
         
         
-        material.blend_method = "CLIP"
+        material.surface_render_method = "DITHERED"
 
         
         #Store all kinds of properties for export

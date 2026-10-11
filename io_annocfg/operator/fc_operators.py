@@ -27,7 +27,8 @@ class generic_fc_object(Operator, AddObjectHelper):
     bl_options = {'REGISTER', 'UNDO'}
     bl_label = "Add Anno Object"
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.filename = ""
         self.TargetObject : AnnoObject = MainFile()
 
@@ -61,8 +62,8 @@ class fc_object_with_id(generic_fc_object):
 class fc_file(generic_fc_object):
     """Adds a new Fc File"""
     bl_idname = "mesh.add_anno_feedbackfile"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = Cf7File()
 
     def execute(self, context):
@@ -77,8 +78,8 @@ class fc_file(generic_fc_object):
 class fc_Dummy(fc_object_with_id):
     """Creates a new Dummy inside the selected DummyGroup"""
     bl_idname = "mesh.add_anno_dummy"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = Cf7Dummy()
     
     @classmethod
@@ -90,8 +91,8 @@ class fc_Dummy(fc_object_with_id):
 class fc_DummyGroup(fc_object_with_id):
     """Creates a new DummyGroup inside the selected fc file or DummyGroup"""
     bl_idname = "mesh.add_anno_dummygroup"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = Cf7DummyGroup()
 
     @classmethod

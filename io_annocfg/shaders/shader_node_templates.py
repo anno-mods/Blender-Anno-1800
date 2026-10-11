@@ -65,10 +65,11 @@ class ShaderTemplate:
 
     def add_normal(self, normal_key, add_height = False):
         #Normals
-        separate_normal = self.add_shader_node(self.anno_shader, "ShaderNodeSeparateRGB",
+        separate_normal = self.add_shader_node(self.anno_shader, "ShaderNodeSeparateColor",
                                         position = (1, 2),
+                                        mode = "RGB",
                                         inputs = {
-                                            "Image" : self.inputs[normal_key],
+                                            "Color" : self.inputs[normal_key],
                                         },
                                     )
         #Calc normal blue
@@ -76,7 +77,7 @@ class ShaderTemplate:
                                         position = (2, 1.5),
                                         operation = "POWER",
                                         inputs = {
-                                            0 : separate_normal.outputs["R"],
+                                            0 : separate_normal.outputs["Red"],
                                         },
                                         default_inputs = {
                                             1 : 2.0
@@ -86,7 +87,7 @@ class ShaderTemplate:
                                         position = (2, 2.5),
                                         operation = "POWER",
                                         inputs = {
-                                            0 : separate_normal.outputs["G"],
+                                            0 : separate_normal.outputs["Green"],
                                         },
                                         default_inputs = {
                                             1 : 2.0
@@ -118,12 +119,13 @@ class ShaderTemplate:
                                         },
                                     )
         
-        combine_normal = self.add_shader_node(self.anno_shader, "ShaderNodeCombineRGB",
+        combine_normal = self.add_shader_node(self.anno_shader, "ShaderNodeCombineColor",
                                         position = (4, 2),
+                                        mode = "RGB",
                                         inputs = {
-                                            "R" : separate_normal.outputs["R"],
-                                            "G" : separate_normal.outputs["G"],
-                                            "B" : normal_blue.outputs["Value"],
+                                            "Red" : separate_normal.outputs["Red"],
+                                            "Green" : separate_normal.outputs["Green"],
+                                            "Blue" : normal_blue.outputs["Value"],
                                         },
                                     )
         normal_map = self.add_shader_node(self.anno_shader, "ShaderNodeNormalMap",
@@ -132,7 +134,7 @@ class ShaderTemplate:
                                             0 : 0.5,
                                         },
                                         inputs = {
-                                            "Color" : combine_normal.outputs["Image"],
+                                            "Color" : combine_normal.outputs["Color"],
                                         },
                                     )
         bump_map = None

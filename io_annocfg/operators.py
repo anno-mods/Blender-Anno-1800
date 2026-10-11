@@ -876,7 +876,8 @@ class OBJECT_OT_add_anno_object(Operator, AddObjectHelper):
             "SimpleAnnoFeedbackEncoding": SimpleAnnoFeedbackEncodingObject,
         }
     
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.filename = ""
     def draw(self, context):
         layout = self.layout

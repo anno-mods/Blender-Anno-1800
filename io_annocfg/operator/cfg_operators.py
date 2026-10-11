@@ -27,7 +27,8 @@ class generic_cfg_object(Operator, AddObjectHelper):
     bl_options = {'REGISTER', 'UNDO'}
     bl_label = "Add Anno Object"
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.filename = ""
         self.TargetObject : AnnoObject = MainFile()
 
@@ -44,44 +45,44 @@ class generic_cfg_object(Operator, AddObjectHelper):
 
 class cfg_mainfile(generic_cfg_object):
     bl_idname = "mesh.add_anno_mainfile"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = MainFile()
 
 class cfg_model(generic_cfg_object):
     bl_idname = "mesh.add_anno_model"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = Model()
 
 class cfg_propcontainer(generic_cfg_object):
     bl_idname = "mesh.add_anno_propcontainer"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = Propcontainer()
 
 class cfg_prop(generic_cfg_object):
     bl_idname = "mesh.add_anno_prop"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = Prop()
 
 class cfg_cloth(generic_cfg_object):
     bl_idname = "mesh.add_anno_cloth"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = Cloth()
 
 class cfg_decal(generic_cfg_object):
     bl_idname = "mesh.add_anno_decal"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = Decal()
 
 class cfg_subfile(generic_cfg_object):
     bl_idname = "mesh.add_anno_subfile"
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.TargetObject = SubFile()
 
 class cfg_menu(bpy.types.Menu):
