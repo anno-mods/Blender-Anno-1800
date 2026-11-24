@@ -183,7 +183,7 @@ class Material:
         if not fullpath.exists():
             return False
         try:
-            subprocess.call(f"\"{IO_AnnocfgPreferences.get_path_to_texconv()}\" -ft PNG -sepalpha -y -o \"{fullpath.parent}\" \"{fullpath}\"")
+            subprocess.call(f"\"{IO_AnnocfgPreferences.get_path_to_texconv()}\" -ft PNG -sepalpha -y -o \"{fullpath.parent}\" \"{fullpath}\"", shell=True)
         except:
             return False
         return fullpath.with_suffix(".png").exists()

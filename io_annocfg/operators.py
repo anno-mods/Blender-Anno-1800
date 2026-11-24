@@ -678,6 +678,12 @@ class ExportAnnoModelOperator(Operator, ExportHelper):
         options={'HIDDEN'},
         maxlen=255,  # Max internal buffer length, longer would be clamped.
     )
+    exclude_transformations: BoolProperty( #type: ignore
+        name="Exclude Transformations",
+        description="Do not bake object location, rotation or scale into the exported RDM geometry. Keep transforms in the CFG.",
+        default=False,
+    )
+
     vertex_format: EnumProperty( #type: ignore
         default="P4h_N4b_G4b_B4b_T2h",
         items = [
@@ -700,7 +706,10 @@ class ExportAnnoModelOperator(Operator, ExportHelper):
         self.path = Path(self.filepath)
         
         export_helpers = {
-            ".rdm": lambda: self.export_wrapper(lambda: self.export_rdm()),
+            ".rdm": lambda: self.export_wrapper(
+                lambda: self.export_rdm(),
+                apply_transformations=not self.exclude_transformations,
+            ),
             ".glb": lambda: self.export_wrapper(lambda: self.export_glb()),
         }
         
@@ -735,20 +744,21 @@ class ExportAnnoModelOperator(Operator, ExportHelper):
             filepath = self.filepath
         bpy.ops.export_scene.gltf(filepath=str(filepath), use_selection = True, check_existing=True, export_format='GLB', export_tangents=True, export_vertex_color = 'ACTIVE', export_materials ='EXPORT')
     
-    def export_wrapper(self, export_function):
-        """Applies loc rot sca, mirrors the object, removes the parent, executes the export function and restores the previous state
+    def export_wrapper(self, export_function, apply_transformations=True):
+        """Prepares the model for export and restores its previous state afterwards.
 
-        Args:
-            export_function ([type]): Function to be called.
+        When apply_transformations is False, object transforms are not baked into
+        vertex coordinates; the exported model is kept in its local coordinate space.
         """
         parent = self.obj.parent
         self.obj.parent = None
-        
+
         matrix = self.obj.matrix_world.copy()
-        for vert in self.obj.data.vertices:
-            vert.co = matrix @ vert.co
+        if apply_transformations:
+            for vert in self.obj.data.vertices:
+                vert.co = matrix @ vert.co
         self.obj.matrix_world.identity()
-        
+
         Transform().mirror_mesh(self.obj)
         
         self.obj = bpy.context.active_object
@@ -760,10 +770,11 @@ class ExportAnnoModelOperator(Operator, ExportHelper):
         
         Transform().mirror_mesh(self.obj)
     
-        inverse = matrix.copy()
-        inverse.invert()
-        for vert in self.obj.data.vertices:
-            vert.co = inverse @ vert.co
+        if apply_transformations:
+            inverse = matrix.copy()
+            inverse.invert()
+            for vert in self.obj.data.vertices:
+                vert.co = inverse @ vert.co
         self.obj.matrix_world = matrix
         
         self.obj.parent = parent
@@ -949,7 +960,8 @@ class ImportAllPropsOperator(Operator, ImportHelper):
             for directory in PurePath(data_path).parts[:-1]:
                 if directory not in ["graphics", "data"]:
                     blender_obj.asset_data.tags.new(directory)
-            bpy.ops.ed.lib_id_generate_preview({"id": blender_obj})
+            with bpy.context.temp_override(id=blender_obj):
+                bpy.ops.ed.lib_id_generate_preview()
         return {"FINISHED"}
 
 
@@ -1006,7 +1018,8 @@ class ImportAllCfgsOperator(Operator, ImportHelper):
             for directory in PurePath(data_path).parts[:-1]:
                 if directory not in ["graphics", "data"]:
                     collection.asset_data.tags.new(directory)
-            bpy.ops.ed.lib_id_generate_preview({"id": collection})
+            with bpy.context.temp_override(id=collection):
+                bpy.ops.ed.lib_id_generate_preview()
         return {"FINISHED"}
 
 
