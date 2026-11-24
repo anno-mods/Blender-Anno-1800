@@ -484,7 +484,7 @@ class Cloth(AnnoObject):
     def add_blender_object_to_scene(cls, node) -> BlenderObject:
         data_path = get_text(node, "FileName")
         imported_obj = None
-        if data_path is not "":
+        if data_path != "":
             imported_obj = import_model_to_scene(data_path)
         if imported_obj is None:
             bpy.ops.mesh.primitive_plane_add(size=1, enter_editmode=False, align='WORLD', location=(0,0,0), scale=(1,1,1))
@@ -643,7 +643,7 @@ class Model(AnnoObject):
         print(node)
         data_path = get_text(node, "FileName")
         imported_obj = None 
-        if data_path is not "":
+        if data_path != "":
             imported_obj = import_model_to_scene(data_path)
         if imported_obj is None:
             bpy.ops.mesh.primitive_cube_add(size = 1.0, location=(0,0,0))
@@ -761,7 +761,8 @@ class SubFile(AnnoObject):
         for directory in PurePath(data_path).parts[:-1]:
             if directory not in ["graphics", "data"]:
                 collection.asset_data.tags.new(directory)
-        bpy.ops.ed.lib_id_generate_preview({"id": collection})
+        with bpy.context.temp_override(id=collection):
+            bpy.ops.ed.lib_id_generate_preview()
         
         
         recursive_add_to_collection(file_obj, collection)
@@ -932,7 +933,7 @@ class Prop(AnnoObject):
 
         print(prop_file)
 
-        proc_args = f"\"{IO_AnnocfgPreferences.get_path_to_filedb_reader()}\" fctohex -d -y -f \"{prop_file}\""
+        proc_args = [str(IO_AnnocfgPreferences.get_path_to_filedb_reader()), "fctohex", "-d", "-y", "-f", str(prop_file)]
         subprocess.call(proc_args)
 
         xml_path = prop_file.with_suffix(".xml")

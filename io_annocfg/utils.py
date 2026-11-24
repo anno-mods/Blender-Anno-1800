@@ -8,7 +8,7 @@ import re
 from typing import Tuple, List, NewType, Any, Union, Dict, Optional, TypeVar, Type
 
 def data_path_to_absolute_path(path):
-    path = Path(path)
+    path = Path(str(path).replace("\\", "/"))
     rda_absolute_path = Path(IO_AnnocfgPreferences.get_path_to_rda_folder(), path)
     if bpy.context.scene.anno_mod_folder == "":
         return rda_absolute_path

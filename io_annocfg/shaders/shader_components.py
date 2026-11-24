@@ -21,7 +21,7 @@ class AbstractLink:
         self.default_value = default_value
 
     def has_socket(self):
-        return self.socket_type is not "NoSocket"
+        return self.socket_type != "NoSocket"
 
     def has_default_value(self):
         return self.default_value is not None
@@ -158,7 +158,7 @@ class FlaglessTextureLink(AbstractLink):
             return False
         try:
             proc_args = f"\"{IO_AnnocfgPreferences.get_path_to_texconv()}\" -ft PNG -sepalpha -y -o \"{fullpath.parent}\" \"{fullpath}\""
-            subprocess.call(proc_args)
+            subprocess.call(proc_args, shell=True)
         except:
             return False
         return fullpath.with_suffix(".png").exists()

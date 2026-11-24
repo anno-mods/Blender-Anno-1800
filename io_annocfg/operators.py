@@ -949,7 +949,8 @@ class ImportAllPropsOperator(Operator, ImportHelper):
             for directory in PurePath(data_path).parts[:-1]:
                 if directory not in ["graphics", "data"]:
                     blender_obj.asset_data.tags.new(directory)
-            bpy.ops.ed.lib_id_generate_preview({"id": blender_obj})
+            with bpy.context.temp_override(id=blender_obj):
+                bpy.ops.ed.lib_id_generate_preview()
         return {"FINISHED"}
 
 
@@ -1006,7 +1007,8 @@ class ImportAllCfgsOperator(Operator, ImportHelper):
             for directory in PurePath(data_path).parts[:-1]:
                 if directory not in ["graphics", "data"]:
                     collection.asset_data.tags.new(directory)
-            bpy.ops.ed.lib_id_generate_preview({"id": collection})
+            with bpy.context.temp_override(id=collection):
+                bpy.ops.ed.lib_id_generate_preview()
         return {"FINISHED"}
 
 
